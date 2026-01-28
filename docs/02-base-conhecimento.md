@@ -21,10 +21,28 @@ O produto Fundo Imobiliário (FII) substituiu o Fundo Multimercado, pois pessoal
 
 ### Como os dados são carregados?
 
-Existem duas possibilidades, injetar os dados diretamente no prompt (control + c, control + v) ou carregar os arquivos via código.
+Existem duas possibilidades, injetar os dados diretamente no prompt (control + c, control + v) ou carregar os arquivos via código, como no exemplo abaixo:
+
+```Python
+import pandas as pd
+import json
+
+# CSVs
+historico = pd.read_csv('data/historico_atendimento.csv')
+transacoes = pd.read_csv('data/transacoes.csv')
+
+# JSONs
+with open('data/perfil_investidor.json', 'r', encoding='utf-8') as f:
+    perfil = json.load(f)
+
+with open('data/produtos_financeiros.json', 'r', encoding='utf-8') as f:
+    produtos = json.load(f)
+```
 
 ### Como os dados são usados no prompt?
 > Os dados vão no system prompt? São consultados dinamicamente?
+
+Para simplificar, podemos simplesmente "injetar" os dados em nosso prompt, garantindo que o agente tenha o melhor contexto possível. Lembrando que, em soluções mais robustas, o ideal é que essas informações sejam carregadas dinamicamente para que possamos ganhar flexibilidade.
 
 ```text
 DADOS DO CLIENTE E PERFIL (data/perfil_investidor.json):
@@ -128,14 +146,29 @@ PRODUTOS DISPONÍVEIS PARA ENSINO (data/produtos_financeiros.json):
 
 > Mostre um exemplo de como os dados são formatados para o agente.
 
+O exemplo do contexto montado abaixo se baseia nos dados originais da base de conhecimento, mas os sintetiza deixando apenas as informações mais relevantes, otimizando assim o consumo de tokens. Entretanto, vale lembrar que mais importante do que economizar tokens, é ter todas as informações relevantes disponíveis em seu contexto.
 ```
-Dados do Cliente:
+DADOS DO CLIENTE:
+
 - Nome: João Silva
 - Perfil: Moderado
-- Saldo disponível: R$ 5.000
+- Objetivo: Construir reserva de emergência
+- Reserva atual: R$ 10.000 (meta: R$ 15.000)
 
-Últimas transações:
-- 01/11: Supermercado - R$ 450
-- 03/11: Streaming - R$ 55
-...
+RESUMO DE GASTOS:
+
+- Moradia: R$ 1.380
+- Alimentação: R$ 570
+- Transporte: R$ 295
+- Saúde: R$ 188
+- Lazer: R$ 55,90
+- Total de saídas: R$ 2.488,90
+
+PRODUTOS DISPONÍVEIS PARA EXPLICAR:
+
+- Tesouro Selic (risco baixo)
+- CDB Liquidez Diária (risco baixo)
+- LCI/LCA (risco baixo)
+- Fundo Imobiliário - FII (risco médio)
+- Fundo de Ações (risco alto)
 ```
